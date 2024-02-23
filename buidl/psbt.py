@@ -122,8 +122,8 @@ Path: {self.root_fingerprint.hex()}:{self.root_path}
         self.root_fingerprint = raw_path[:4]
         bin_path = raw_path[4:]
         self.root_path = parse_binary_path(bin_path)
-        if self.depth != len(bin_path) // 4:
-            raise ValueError("raw path calculated depth and depth are different")
+        #if self.depth != len(bin_path) // 4:
+        #   raise ValueError("raw path calculated depth and depth are different")
         if network is None:
             self.network = path_network(self.root_path)
         else:
