@@ -67,41 +67,34 @@ def is_valid_xfp_hex(string):
 
 def parse_full_key_record(key_record_str):
     """
-    A full key record will come from your Coordinator and include a reference to an account index.
-    It will look something like this:
-    [c7d0648a/48h/1h/0h/2h]tpubDEpefcgzY6ZyEV2uF4xcW2z8bZ3DNeWx9h2BcwcX973BHrmkQxJhpAXoSWZeHkmkiTtnUjfERsTDTVCcifW6po3PFR1JRjUUTJHvPpDqJhr/0/*
-
-    A full key record is basically a partial key record, with a trailing /{account-index}/*
+    Adjusted to handle complex key record structures with additional path components.
     """
-
-    # Validate that it appears to be a full key record:
+    # Split the key record by "/"
     parts = key_record_str.split("/")
     if parts[-1] != "*":
-        raise ValueError(
-            "Invalid full key record, does not end with a *: {key_record_str}"
-        )
-    if not is_intable(parts[-2]):
-        raise ValueError(
-            "Invalid full key record, account index `{parts[-2]}` is not an int: {key_record_str}"
-        )
-
-    # Now we strip off the trailing account index and *, and parse the rest as a partial key record
-    partial_key_record_str = "/".join(parts[0 : len(parts) - 2])
-
+        raise ValueError(f"Invalid full key record, does not end with a *: {key_record_str}")
+    
+    # Find the last part that is convertible to an integer before the wildcard, treating it as the account index
+    for i in range(len(parts) - 2, -1, -1):  # Start from the part before the wildcard, move backwards
+        if is_intable(parts[i]):
+            account_index = int(parts[i])
+            # Reconstruct the partial key record without the account index and wildcard
+            partial_key_record_str = "/".join(parts[:i])
+            break
+    else:  # If no convertible part is found, raise an error
+        raise ValueError(f"Invalid full key record, account index is not an int: {key_record_str}")
+    
+    # Parse the partial key record
     to_return = parse_partial_key_record(key_record_str=partial_key_record_str)
-    to_return["account_index"] = int(parts[-2])
+    to_return["account_index"] = account_index
     to_return["xpub_parent"] = to_return.pop("xpub")
-
+    
     try:
         parent_pubkey_obj = HDPublicKey.parse(s=to_return["xpub_parent"])
-        to_return["xpub_child"] = parent_pubkey_obj.child(
-            index=to_return["account_index"]
-        ).xpub()
+        to_return["xpub_child"] = parent_pubkey_obj.child(index=to_return["account_index"]).xpub()
     except ValueError:
-        raise ValueError(
-            f"Invalid parent xpub {to_return['xpub_parent']} in key record: {key_record_str}"
-        )
-
+        raise ValueError(f"Invalid parent xpub {to_return['xpub_parent']} in key record: {key_record_str}")
+    
     return to_return
 
 
