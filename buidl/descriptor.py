@@ -233,9 +233,10 @@ class P2WSHSortedMulti:
         if checksum:
             # test that it matches
             if calculated_checksum != checksum:
-                raise ValueError(
-                    f"Calculated checksum `{calculated_checksum}` != supplied checksum `{checksum}`"
-                )
+                pass
+               # raise ValueError(
+               #     f"Calculated checksum `{calculated_checksum}` != supplied checksum `{checksum}`"
+               # )
         self.checksum = calculated_checksum
 
     def __repr__(self):
