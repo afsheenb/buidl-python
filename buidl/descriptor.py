@@ -257,7 +257,7 @@ class P2WSHSortedMulti:
 
         # Regex match the string - update to optionally include <0;1>  
         re_output_results = re.match(
-                    r".*wsh\(sortedmulti\(([0-9]+),((?:\[.*?\].*?\/<.*?>\/\*,?)+)\)\)(\#[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{8})?.*",
+                    r".*wsh\(sortedmulti\(([0-9]+),((?:\[.*?\].*?\/(?:<0;[0-9]+>\/)?\*,?)+)\)\)(\#[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{8})?.*",
             output_record,
         )
         if re_output_results is None:
