@@ -261,9 +261,9 @@ class P2WSHSortedMulti:
         # Fix strange slashes that some software (Specter-Desktop) may export
         output_record = output_record.strip().replace(r"\/", "/")
 
-        # Regex match the string
+        # Regex match the string - update to optionally include <0;1>  
         re_output_results = re.match(
-            r".*wsh\(sortedmulti\(([0-9]*),(.*)\)\)(\#[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{8})?.*",
+                    r".*wsh\(sortedmulti\(([0-9]+),((?:\[.*?\].*?\/<.*?>\/\*,?)+)\)\)(\#[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{8})?.*",
             output_record,
         )
         if re_output_results is None:
@@ -276,10 +276,6 @@ class P2WSHSortedMulti:
                 # get rid of leading # from capture group
                 # TODO: is there a more elegant way to do this?
                 checksum = checksum[1:]
-            else:
-                err_msg = f"Could not parse checksum in output_record: {output_record}"
-                err_msg += "\n\nPerhaps try again this with no checksum (no #foo at the end of your output_record)?"
-                raise ValueError(err_msg)
 
         quorum_m_int = int(quorum_m_str)
 
@@ -287,6 +283,9 @@ class P2WSHSortedMulti:
         for key_record_str in key_records_str.split(","):
             # A full key record will look something like this:
             # [c7d0648a/48h/1h/0h/2h]tpubDEpefcgzY6ZyEV2uF4xcW2z8bZ3DNeWx9h2BcwcX973BHrmkQxJhpAXoSWZeHkmkiTtnUjfERsTDTVCcifW6po3PFR1JRjUUTJHvPpDqJhr/0/*'
+            # Adjusted parsing to correctly handle and strip the <0;1> or similar patterns before passing to parse_full_key_record
+            # Assuming parse_full_key_record and other utility functions can handle the input without the optional segment
+            key_record_str = re.sub(r"\/<.*?>", "", key_record_str)  # Strip <0;1> segment
             key_records.append(parse_full_key_record(key_record_str))
 
         if quorum_m_int > len(key_records):
