@@ -278,7 +278,7 @@ class P2WSHSortedMulti:
             # [c7d0648a/48h/1h/0h/2h]tpubDEpefcgzY6ZyEV2uF4xcW2z8bZ3DNeWx9h2BcwcX973BHrmkQxJhpAXoSWZeHkmkiTtnUjfERsTDTVCcifW6po3PFR1JRjUUTJHvPpDqJhr/0/*'
             # Adjusted parsing to correctly handle and strip the <0;1> or similar patterns before passing to parse_full_key_record
             # Assuming parse_full_key_record and other utility functions can handle the input without the optional segment
-            key_record_str = re.sub(r"\/<.*?>", "", key_record_str)  # Strip <0;1> segment
+            key_record_str = re.sub(r"\<0;\d+\>", "0", key_record_str)
             key_records.append(parse_full_key_record(key_record_str))
 
         if quorum_m_int > len(key_records):
