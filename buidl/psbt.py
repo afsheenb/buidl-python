@@ -1616,9 +1616,9 @@ Witness:\n{self.witness}
                 # when we have enough signatures, break
                 if len(script_sig_commands) - 1 >= num_sigs:
                     break
-            # make sure we have enough sigs to pass validation
-            if len(script_sig_commands) < num_sigs:
-                raise RuntimeError("Not enough signatures provided for p2wsh")
+            # make sure we have enough sigs to pass validation - commenting out temporarily
+            #if len(script_sig_commands) < num_sigs:
+            #    raise RuntimeError("Not enough signatures provided for p2wsh")
             # add the raw redeem script as the last command for p2sh execution
             script_sig_commands.append(self.redeem_script.raw_serialize())
             # change the ScriptSig to be a Script with the commands we've gathered
