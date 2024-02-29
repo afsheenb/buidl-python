@@ -106,7 +106,7 @@ def parse_partial_key_record(key_record_str):
     """
 
     key_record_re = re.match(
-        r"\[([0-9a-f]{8})\*?(.*?)\]([0-9A-Za-z].*)", key_record_str
+        r"\[(([0-9a-fA-F]{8})(?:\/\d+)+)\](xpub[0-9A-Za-z]+)", key_record_str
     )
     if key_record_re is None:
         raise ValueError(f"Invalid key record: {key_record_str}")
